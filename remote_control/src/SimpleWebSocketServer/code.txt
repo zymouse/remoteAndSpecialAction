@@ -1,0 +1,69 @@
+/remote/raw_control_cmd  
+    网络传入
+    -- autoware_vehicle_msgs::RawControlCommandStampedConstPtr
+    raw_control_cmd_ptr->header;
+    raw_control_cmd_ptr->control.steering_angle;
+    raw_control_cmd_ptr->control.steering_angle_velocity;
+
+    std_msgs/Header header
+        uint32 seq
+        time stamp
+        string frame_id
+    autoware_vehicle_msgs/RawControlCommand control
+        float64 steering_angle
+        float64 steering_angle_velocity
+        float64 throttle
+        float64 brake
+--------------------------------------------------------------
+/remote/shift_cmd   
+     网络传入      
+    -- autoware_vehicle_msgs::ShiftStamped::ConstPtr  
+    all
+
+    std_msgs/Header header
+        uint32 seq
+        time stamp
+        string frame_id
+    autoware_vehicle_msgs/Shift shift
+        uint8 NONE=0
+        uint8 PARKING=1
+        uint8 REVERSE=2
+        uint8 NEUTRAL=3
+        uint8 DRIVE=4
+        uint8 LOW=5
+        int32 data
+---------------------------------------------------------------
+/remote/emergency_stop
+    网路传入    
+    -- std_msgs::Bool::ConstPtr
+    msg->data
+
+    bool data
+---------------------------------------------------------------
+/control/current_gate_mode 
+    网路传入
+    -- autoware_control_msgs::GateModeConstPtr
+    all
+
+    uint8 AUTO=0
+    uint8 REMOTE=1
+    uint8 data
+---------------------------------------------------------------
+/localization/twist 
+    底盘速度       
+    --  geometry_msgs::TwistStamped::ConstPtr
+    twist.linear.x
+
+    std_msgs/Header header
+        uint32 seq
+        time stamp
+        string frame_id
+    geometry_msgs/Twist twist
+        geometry_msgs/Vector3 linear
+            float64 x
+            float64 y
+            float64 z
+        geometry_msgs/Vector3 angular
+            float64 x
+            float64 y
+            float64 z
