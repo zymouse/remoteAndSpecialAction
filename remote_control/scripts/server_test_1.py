@@ -14,7 +14,7 @@ import rospy
 from threading import Thread
 
 from remote_control.msg import RemoteControl
-#from autoware_msgs.msg import RemoteCmd
+# from autoware_msgs.msg import RemoteCmd
 # from pix_driver_msgs.msg import BmsReport
 # from pix_driver_msgs.msg import BrakeReport
 # from pix_driver_msgs.msg import GearReport

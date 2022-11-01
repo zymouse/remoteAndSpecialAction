@@ -62,7 +62,9 @@ class PAAPRemote:
         self.pub_GateMode_msg          = GateMode()
         self.pub_TwistStamped_msg      = TwistStamped()
 
+        # 转向值，转向角速度，油门踏板量，刹车踏板量
         self.pub_raw_control_cmd   = rospy.Publisher('/remote/raw_control_cmd', RawControlCommandStamped, queue_size=10)
+        
         self.pub_shift_cmd         = rospy.Publisher('/remote/shift_cmd', ShiftStamped, queue_size=10)
         self.pub_emergency_stop    = rospy.Publisher('/remote/emergency_stop', Bool, queue_size=10)
         self.pub_current_gate_mode = rospy.Publisher('/control/current_gate_mode', GateMode, queue_size=10)
@@ -105,12 +107,12 @@ class PAAPRemote:
         # 需要优化后端--------------------------------------
         # 网络的车辆模式值 /control/current_gate_mode 
         self.pub_GateMode_msg.data = msg.vehicleMod
-        self.pub_current_gate_mode.publish(pub_GateMode_msg)
+        self.pub_current_gate_mode.publish(self.pub_GateMode_msg)
 
         # 底盘反馈的底盘速度值 /localization/twist 
         self.pub_TwistStamped_msg.header.stamp = rospy.Time.now()
         self.pub_TwistStamped_msg.twist.linear.x = self.vehicle_current_speed
-        self.pub_twistStamped.publish(pub_TwistStamped_msg)
+        self.pub_twistStamped.publish(self.pub_TwistStamped_msg)
 
 
 
