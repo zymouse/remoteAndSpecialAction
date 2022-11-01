@@ -7,7 +7,7 @@ float32 tr
 float32 bk
 # 方向盘转向值
 float32 st
-# 档位
+# 档位-D N R P
 string g
 # 控制模式--3自动驾驶模式，5远程控制模式
 uint8 m

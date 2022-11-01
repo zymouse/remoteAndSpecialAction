@@ -67,7 +67,7 @@ class PAAPRemote:
         
         self.pub_shift_cmd         = rospy.Publisher('/remote/shift_cmd', ShiftStamped, queue_size=10)
         self.pub_emergency_stop    = rospy.Publisher('/remote/emergency_stop', Bool, queue_size=10)
-        self.pub_current_gate_mode = rospy.Publisher('/control/current_gate_mode', GateMode, queue_size=10)
+        self.pub_current_gate_mode = rospy.Publisher('/remote/current_gate_mode', GateMode, queue_size=10)
         self.pub_twistStamped      = rospy.Publisher('/localization/twist', TwistStamped, queue_size=10)
 
     def remote_control_callback(self, msg):
@@ -93,7 +93,16 @@ class PAAPRemote:
 
         # 网络的挡位值 ---> /remote/shift_cmd
         self.pub_ShiftStamped_msg.header.stamp = rospy.Time.now()
-        self.pub_ShiftStamped_msg.shift.data = msg.g
+        if(msg.g=="D"):
+            self.pub_ShiftStamped_msg.shift.data = 4
+
+        if(msg.g=="N"):
+            self.pub_ShiftStamped_msg.shift.data = 3
+        if(msg.g=="R"):
+            self.pub_ShiftStamped_msg.shift.data = 2
+        if(msg.g=="P"):
+            self.pub_ShiftStamped_msg.shift.data = 1
+
         self.pub_shift_cmd.publish(self.pub_ShiftStamped_msg)  
 
         # 需要优化后端--------------------------------------
@@ -106,7 +115,12 @@ class PAAPRemote:
 
         # 需要优化后端--------------------------------------
         # 网络的车辆模式值 /control/current_gate_mode 
-        self.pub_GateMode_msg.data = msg.vehicleMod
+        if msg.m==3:
+            self.pub_GateMode_msg.data = 0
+        else:
+            self.pub_GateMode_msg.data = 1
+        # 
+        rospy.loginfo("操作模式更换")
         self.pub_current_gate_mode.publish(self.pub_GateMode_msg)
 
         # 底盘反馈的底盘速度值 /localization/twist 
