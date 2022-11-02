@@ -62,12 +62,21 @@ class PAAPRemote:
         self.pub_GateMode_msg          = GateMode()
         self.pub_TwistStamped_msg      = TwistStamped()
 
+        """
+        /remote/control_cmd
+        /remote/emergency_stop
+        /remote/gate_mode_cmd
+        /remote/latest_raw_control_cmd
+        /remote/raw_control_cmd
+        /remote/shift_cmd
+        /remote/turn_signal_cmd
+        """
         # 转向值，转向角速度，油门踏板量，刹车踏板量
         self.pub_raw_control_cmd   = rospy.Publisher('/remote/raw_control_cmd', RawControlCommandStamped, queue_size=10)
         
         self.pub_shift_cmd         = rospy.Publisher('/remote/shift_cmd', ShiftStamped, queue_size=10)
         self.pub_emergency_stop    = rospy.Publisher('/remote/emergency_stop', Bool, queue_size=10)
-        self.pub_current_gate_mode = rospy.Publisher('/remote/current_gate_mode', GateMode, queue_size=10)
+        self.pub_current_gate_mode = rospy.Publisher('/remote/gate_mode_cmd', GateMode, queue_size=10)
         self.pub_twistStamped      = rospy.Publisher('/localization/twist', TwistStamped, queue_size=10)
 
     def remote_control_callback(self, msg):
@@ -87,7 +96,7 @@ class PAAPRemote:
         #     self.pub_RawControlCommand_msg.control.throttle = 0
         # else:
         #     self.pub_RawControlCommand_msg.control.throttle = msg.bk
-        self.pub_RawControlCommand_msg.control.throttle = msg.bk
+        self.pub_RawControlCommand_msg.control.throttle = msg.tr
         self.pub_RawControlCommand_msg.control.brake = msg.bk
         self.pub_raw_control_cmd.publish(self.pub_RawControlCommand_msg)
 
