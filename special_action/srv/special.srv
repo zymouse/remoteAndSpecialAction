@@ -1,0 +1,7 @@
+# 1 转圈圈 2 斜行
+int8 action_type
+# 特殊动作终点
+geometry_msgs/Pose end_pose
+---
+# 完成状态
+int8 status
