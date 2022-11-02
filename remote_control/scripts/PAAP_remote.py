@@ -95,14 +95,12 @@ class PAAPRemote:
         self.pub_ShiftStamped_msg.header.stamp = rospy.Time.now()
         if(msg.g=="D"):
             self.pub_ShiftStamped_msg.shift.data = 4
-
         if(msg.g=="N"):
             self.pub_ShiftStamped_msg.shift.data = 3
         if(msg.g=="R"):
             self.pub_ShiftStamped_msg.shift.data = 2
         if(msg.g=="P"):
             self.pub_ShiftStamped_msg.shift.data = 1
-
         self.pub_shift_cmd.publish(self.pub_ShiftStamped_msg)  
 
         # 需要优化后端--------------------------------------
@@ -120,7 +118,7 @@ class PAAPRemote:
         else:
             self.pub_GateMode_msg.data = 1
         # 
-        rospy.loginfo("操作模式更换")
+        # rospy.loginfo("操作模式更换")
         self.pub_current_gate_mode.publish(self.pub_GateMode_msg)
 
         # 底盘反馈的底盘速度值 /localization/twist 
