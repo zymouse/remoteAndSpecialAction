@@ -76,7 +76,7 @@ class SpecialAction(object):
             if(all(self.isNearPose(self.current_pose, end_pose, 0.5)) and a>1):
                 break
         
-        self.remote_control_msg.m = 3            # 远程驾驶模式
+        self.remote_control_msg.m = 3            # 自动驾驶模式
         self.remote_control_msg.stVehicleMod=1   # 异向转向模式
 
         self.remote_control_msg.g = "D"          # 档位模式
@@ -101,7 +101,7 @@ class SpecialAction(object):
                 break
 
             
-        self.remote_control_msg.m = 3            # 远程驾驶模式
+        self.remote_control_msg.m = 3            # 自动驾驶模式
         self.remote_control_msg.stVehicleMod=1   # 异向转向模式
 
         self.remote_control_msg.g = "D"          # 档位模式
