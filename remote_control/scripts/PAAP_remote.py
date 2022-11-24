@@ -45,7 +45,10 @@ class PAAPRemote:
         self.vehicle_current_speed = 0
         self.vehicle_current_gear = 3
         
- 
+        wheelMaxTurnAngular = rospy.get_param("/vehicle/wheelMaxTurnAngular", 24)  # 轮胎转动角度
+        steeringMaxTurnAngular = rospy.get_param("/remote/steeringMaxTurnAngular", 24)  # 轮胎转动角度
+        self.wheelSteeringrRatio = (wheelMaxTurnAngular*(math.pi/180.0))/steeringMaxTurnAngular
+        
 
         self.sub_gear_report = rospy.Subscriber('/pix/gear_report', gear_report_503, self.gear_report_callback)
         self.sub_remote_command = rospy.Subscriber('/pix/vcu_report', vcu_report_505, self.vcu_report_callback)
@@ -72,12 +75,12 @@ class PAAPRemote:
         /remote/turn_signal_cmd
         """
         # 转向值，转向角速度，油门踏板量，刹车踏板量
-        self.pub_raw_control_cmd   = rospy.Publisher('/remote/raw_control_cmd', RawControlCommandStamped, queue_size=10)
+        self.pub_raw_control_cmd   = rospy.Publisher('/remote/control_cmd', RawControlCommandStamped, queue_size=10)
         
         self.pub_shift_cmd         = rospy.Publisher('/remote/shift_cmd', ShiftStamped, queue_size=10)
         self.pub_emergency_stop    = rospy.Publisher('/remote/emergency_stop', Bool, queue_size=10)
         self.pub_current_gate_mode = rospy.Publisher('/remote/gate_mode_cmd', GateMode, queue_size=10)
-        self.pub_twistStamped      = rospy.Publisher('/localization/twist', TwistStamped, queue_size=10)
+        # self.pub_twistStamped      = rospy.Publisher('/localization/twist', TwistStamped, queue_size=10)
 
     def remote_control_callback(self, msg):
         ## @brief 订阅回调函数
@@ -90,7 +93,7 @@ class PAAPRemote:
         
         # 网络的刹车值, 油门值, 转向值, 转向速率值 ---> /remote/raw_control_cmd
         self.pub_RawControlCommand_msg.header.stamp = rospy.Time.now()
-        self.pub_RawControlCommand_msg.control.steering_angle = -msg.st*5
+        self.pub_RawControlCommand_msg.control.steering_angle = -msg.st*self.wheelSteeringrRatio
         self.pub_RawControlCommand_msg.control.steering_angle_velocity = 250
         # if(msg.g ==  "N" or msg.g ==  "P" or msg.g ==  "-"):
         #     self.pub_RawControlCommand_msg.control.throttle = 0
@@ -131,30 +134,9 @@ class PAAPRemote:
         self.pub_current_gate_mode.publish(self.pub_GateMode_msg)
 
         # 底盘反馈的底盘速度值 /localization/twist 
-        self.pub_TwistStamped_msg.header.stamp = rospy.Time.now()
-        self.pub_TwistStamped_msg.twist.linear.x = self.vehicle_current_speed
-        self.pub_twistStamped.publish(self.pub_TwistStamped_msg)
-
-
-
-
-        # self.pub_remote_msg.velocity 
-        # self.speed = msg.tr/60
-        # self.brake = msg.bk
-        # self.steer = -msg.st*5
-        
-        # if(msg.g == 'N'):
-        #     self.pub_remote_msg.velocity =  0
-        # elif(msg.g == 'P'):
-        #     self.pub_remote_msg.velocity = 0 
-        # elif(msg.g == 'R'):
-        #     self.pub_remote_msg.velocity = -msg.tr/60 
-        # elif(msg.g == 'D'):
-        #     self.pub_remote_msg.velocity = msg.tr/60 
-        # elif(msg.g == '-'):
-        #     self.pub_remote_msg.velocity = 0 
-        # if(self.vehicle_current_gear != msg.g):
-        #     self.pub_remote_msg.velocity = 0 
+        # self.pub_TwistStamped_msg.header.stamp = rospy.Time.now()
+        # self.pub_TwistStamped_msg.twist.linear.x = self.vehicle_current_speed
+        # self.pub_twistStamped.publish(self.pub_TwistStamped_msg)
         
         
 

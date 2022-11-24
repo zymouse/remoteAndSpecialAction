@@ -1,7 +1,7 @@
 <launch>
-    <!-- <incldue file="$(find socketcan_bridge)/launch/socketcan_bridge.launch"/>
-    <incldue file="$(find pix_driver)/launch/pix_driver_remote.launch"/> -->
     <node pkg="remote_control" name="remote_server" type="server_test_1.py" output="screen"/>
-    <node pkg="remote_control" name="remote_control" type="control_converter_speed.py" /> 
-    <!-- <node pkg="remote_control" name="acu_sweepctrlcmd" type="acu_sweepctrlcmd.py" />  -->
+    <node pkg="remote_control" name="remote_control" type="PAAP_remote.py"> 
+        <param name="/vehicle/wheelMaxTurnAngular" value="24" type="double"></param>
+        <param name="/remote/steeringMaxTurnAngular" value="500" type="double"></param>
+    </node>
 </launch>
