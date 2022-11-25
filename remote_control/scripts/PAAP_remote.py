@@ -13,24 +13,7 @@ from geometry_msgs.msg import TwistStamped
 from pix_driver_msgs.msg import gear_report_503,vcu_report_505
 
 from remote_control.msg import RemoteControl
- 
-
-
-
-"""
-topicName: /remote/raw_control_cmd
-
-msgType:autoware_control_msgs/ControlCommandStamped 
-            std_msgs/Header header
-                uint32 seq
-                time stamp
-                string frame_id
-            autoware_control_msgs/ControlCommand control
-                float64 steering_angle
-                float64 steering_angle_velocity
-                float64 velocity
-                float64 acceleration
-"""
+·
 
 class PAAPRemote:
     """
@@ -75,7 +58,7 @@ class PAAPRemote:
         /remote/turn_signal_cmd
         """
         # 转向值，转向角速度，油门踏板量，刹车踏板量
-        self.pub_raw_control_cmd   = rospy.Publisher('/remote/control_cmd', RawControlCommandStamped, queue_size=10)
+        self.pub_raw_control_cmd   = rospy.Publisher('/remote/raw_control_cmd', RawControlCommandStamped, queue_size=10)
         
         self.pub_shift_cmd         = rospy.Publisher('/remote/shift_cmd', ShiftStamped, queue_size=10)
         self.pub_emergency_stop    = rospy.Publisher('/remote/emergency_stop', Bool, queue_size=10)
@@ -94,13 +77,14 @@ class PAAPRemote:
         # 网络的刹车值, 油门值, 转向值, 转向速率值 ---> /remote/raw_control_cmd
         self.pub_RawControlCommand_msg.header.stamp = rospy.Time.now()
         self.pub_RawControlCommand_msg.control.steering_angle = -msg.st*self.wheelSteeringrRatio
-        self.pub_RawControlCommand_msg.control.steering_angle_velocity = 250
+        self.pub_RawControlCommand_msg.control.steering_angle_velocity = self.wheelSteeringrRatio*100
         # if(msg.g ==  "N" or msg.g ==  "P" or msg.g ==  "-"):
         #     self.pub_RawControlCommand_msg.control.throttle = 0
         # else:
         #     self.pub_RawControlCommand_msg.control.throttle = msg.bk
-        self.pub_RawControlCommand_msg.control.throttle = msg.tr
-        self.pub_RawControlCommand_msg.control.brake = msg.bk
+        # 最大10%的踏板量
+        self.pub_RawControlCommand_msg.control.throttle = (msg.tr/100)/10
+        self.pub_RawControlCommand_msg.control.brake = (msg.bk/100)/10
         self.pub_raw_control_cmd.publish(self.pub_RawControlCommand_msg)
 
         # 网络的挡位值 ---> /remote/shift_cmd
