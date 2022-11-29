@@ -13,7 +13,6 @@ from geometry_msgs.msg import TwistStamped
 from pix_driver_msgs.msg import gear_report_503,vcu_report_505
 
 from remote_control.msg import RemoteControl
-·
 
 class PAAPRemote:
     """
@@ -28,9 +27,9 @@ class PAAPRemote:
         self.vehicle_current_speed = 0
         self.vehicle_current_gear = 3
         
-        wheelMaxTurnAngular = rospy.get_param("/vehicle/wheelMaxTurnAngular", 24)  # 轮胎转动角度
-        steeringMaxTurnAngular = rospy.get_param("/remote/steeringMaxTurnAngular", 24)  # 轮胎转动角度
-        self.wheelSteeringrRatio = (wheelMaxTurnAngular*(math.pi/180.0))/steeringMaxTurnAngular
+        wheelMaxTurnAngular = rospy.get_param("/vehicle/wheelMaxTurnAngular", 0.3)  # 轮胎转动角度
+        steeringMaxTurnAngular = rospy.get_param("/remote/steeringMaxTurnAngular", 100)  # 轮胎转动角度
+        self.wheelSteeringrRatio = wheelMaxTurnAngular/steeringMaxTurnAngular
         
 
         self.sub_gear_report = rospy.Subscriber('/pix/gear_report', gear_report_503, self.gear_report_callback)
@@ -77,12 +76,13 @@ class PAAPRemote:
         # 网络的刹车值, 油门值, 转向值, 转向速率值 ---> /remote/raw_control_cmd
         self.pub_RawControlCommand_msg.header.stamp = rospy.Time.now()
         self.pub_RawControlCommand_msg.control.steering_angle = -msg.st*self.wheelSteeringrRatio
-        self.pub_RawControlCommand_msg.control.steering_angle_velocity = self.wheelSteeringrRatio*100
+        # self.pub_RawControlCommand_msg.control.steering_angle_velocity = self.wheelSteeringrRatio*100
+        self.pub_RawControlCommand_msg.control.steering_angle_velocity = 0
         # if(msg.g ==  "N" or msg.g ==  "P" or msg.g ==  "-"):
         #     self.pub_RawControlCommand_msg.control.throttle = 0
         # else:
         #     self.pub_RawControlCommand_msg.control.throttle = msg.bk
-        # 最大10%的踏板量
+        # 最大10%的踏板量·
         self.pub_RawControlCommand_msg.control.throttle = (msg.tr/100)/10
         self.pub_RawControlCommand_msg.control.brake = (msg.bk/100)/10
         self.pub_raw_control_cmd.publish(self.pub_RawControlCommand_msg)
@@ -101,7 +101,7 @@ class PAAPRemote:
 
         # 需要优化后端--------------------------------------
         # 网络的挡位值 ---> /remote/emergency_stop
-        if(msg.g ==  "N" or msg.g ==  "P" or msg.g ==  "-"):
+        if(msg.g ==  "" or msg.g ==  "-"):
             self.pub_StopBool_msg.data = True
         else:
             self.pub_StopBool_msg.data = False
@@ -113,7 +113,7 @@ class PAAPRemote:
             self.pub_GateMode_msg.data = 0
         else:
             self.pub_GateMode_msg.data = 1
-        # 
+        
         # rospy.loginfo("操作模式更换")
         self.pub_current_gate_mode.publish(self.pub_GateMode_msg)
 
